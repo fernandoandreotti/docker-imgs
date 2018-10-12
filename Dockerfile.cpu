@@ -1,14 +1,13 @@
-# Parameters that may be changed
-ARG UBUNTU_VERSION=16.04
-ARG PYTHON_VERSION=3.6.5
+FROM ubuntu:16.04
+
+ARG PYTHON_VERSION=3.6
 ARG TENSORFLOW_VERSION=1.11
+ARG LOCALPATH=/data
 
 
-FROM ubuntu:${UBUNTU_VERSION}
 MAINTAINER Fernando Andreotti <fernando.andreotti@gmx.de>
 
 USER root
-ENV LOCALPATH=/data
 ENTRYPOINT ["/bin/bash", "-c" ]
 ENV DEBIAN_FRONTEND noninteractive
 ENV HOME $LOCALPATH
@@ -26,7 +25,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
         g++ \
         git \
-        glxgears \
         language-pack-en \
         libatlas-dev \
         libbz2-dev \
@@ -42,7 +40,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libtool \
         libzmq3-dev \        
         make \
-        nvidia-340 mesa-utils \ 
+        mesa-utils \ 
         pkg-config \        
         python3-dev \
         python3 \

@@ -1,11 +1,11 @@
+FROM nvidia/cuda:9.0-cudnn7-devel-ubuntu16.04
 # Parameters that may be changed
-ARG UBUNTU_VERSION=16.04
 ARG PYTHON_VERSION=3.6.5
 ARG TENSORFLOW_VERSION=1.11
 ARG CUDA=9.0
 ARG CUDNN=7
 
-FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu${UBUNTU_VERSION}
+
 MAINTAINER Fernando Andreotti <fernando.andreotti@gmx.de>
 
 USER root
