@@ -1,0 +1,136 @@
+# Parameters that may be changed
+ARG UBUNTU_VERSION=16.04
+ARG PYTHON_VERSION=3.6.5
+ARG TENSORFLOW_VERSION=1.11
+ARG CUDA=9.0
+ARG CUDNN=7
+
+FROM nvidia/cuda:${CUDA}-cudnn${CUDNN}-devel-ubuntu${UBUNTU_VERSION}
+MAINTAINER Fernando Andreotti <fernando.andreotti@gmx.de>
+
+USER root
+ENV LOCALPATH=/data
+ENTRYPOINT ["/bin/bash", "-c" ]
+ENV DEBIAN_FRONTEND noninteractive
+ENV HOME $LOCALPATH
+
+########################
+##  Deb Packages     ##
+#######################
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        autoconf \
+        automake \
+        build-essential \
+        bzip2 \
+        cmake \
+        curl \
+        g++ \
+        git \
+        language-pack-en \
+        libatlas-dev \
+        libbz2-dev \
+        libcurl4-openssl-dev \
+        libfreetype6-dev \
+        libsqlite3-dev \
+        libglib2.0-0 \
+        libncurses5-dev \ 
+        libncursesw5-dev \
+        libopenblas-dev \
+        libreadline-dev \
+        libssl-dev \
+        libtool \
+        libzmq3-dev \        
+        make \
+        pkg-config \
+        python3-dev \
+        python3 \
+        qt5-default \
+        rsync \
+        software-properties-common \
+        sqlite3 \
+        tk-dev \
+        xz-utils \
+        unzip \
+        zip \
+        zlib1g-dev \
+        wget \
+        && apt-get clean \
+        && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir $LOCALPATH
+WORKDIR $LOCALPATH
+
+############################
+##  Install Miniconda    ##
+##########################
+
+ENV MYCONDA_ENV "deeplearn"
+ENV CONDA_ENV_PATH /opt/miniconda
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+RUN curl -LO http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
+RUN /bin/bash Miniconda-latest-Linux-x86_64.sh -p $CONDA_ENV_PATH -b
+ENV PATH ${CONDA_ENV_PATH}/bin:$PATH
+RUN rm Miniconda-latest-Linux-x86_64.sh
+RUN conda update --quiet --yes conda
+
+# Creating Anaconda environment
+RUN conda create -y --name $MYCONDA_ENV python=${PYTHON_VERSION}
+
+# Install Python 3 packages
+RUN conda install -c conda-forge -y -n $MYCONDA_ENV \
+    'beautifulsoup4=4.5*' \
+    'cython=0.27*' \
+    'graphviz=2.38*' \
+    'h5py=2.7*' \    
+    'ipykernel=4.5*' \
+    'ipywidgets=5.2*' \
+    'jupyter=1.0*' \
+    'ipython=5.1*' \
+    'lxml=4.1*' \
+    'matplotlib=2.1*' \
+    'numpy=1.13*' \
+    'pandas=0.20*' \
+    'pillow=4.3*' \
+    'pip=9.0*' \
+    'pymysql=0.7*' \
+    'pydotplus=2.0*' \
+    'scipy=0.19*' \ 
+    'scikit-learn=0.19*' \
+    'setuptools=36.7*' \
+    'six=1.10*' \
+    'sphinx=1.5*' \
+    'spyder=3.2*' \
+    'tornado=4.5.3' \
+    'wheel=0.30*' \
+    && conda clean -tipsy
+
+RUN source activate deeplearn && \
+    pip install --upgrade pip && \
+    pip install pydot3
+
+
+##############################
+##  Install TensorFlow      ##
+##############################
+RUN conda install -c conda-forge -n $MYCONDA_ENV tensorflow-gpu=${TENSORFLOW_VERSION}
+
+
+############################
+## Jupyter Configuration ###
+############################
+
+# Add a notebook profile.
+RUN mkdir -p -m 700 $LOCALPATH/.jupyter/ && \
+	echo "c.NotebookApp.ip = '*'" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
+	echo "c.NotebookApp.port = 8888" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
+	echo "c.NotebookApp.open_browser = False" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
+	echo "c.MultiKernelManager.default_kernel_name = 'python3'" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
+	echo "c.NotebookApp.allow_root = True" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
+	echo "c.NotebookApp.password_required = False" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
+	echo "c.NotebookApp.token = ''" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py
+
+# Expose Ports for TensorBoard (6006), Ipython (8888)
+EXPOSE 6006 8888
+
+CMD ["source activate deeplearn && /bin/bash"]
