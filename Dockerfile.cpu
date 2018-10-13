@@ -1,6 +1,6 @@
-FROM ubuntu:16.04
+FROM ubuntu:14.04
 
-ARG PYTHON_VERSION=3.6
+ARG PYTHON_VERSION=3.6.5
 ARG TENSORFLOW_VERSION=1.11
 ARG LOCALPATH=/data
 
@@ -25,22 +25,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         curl \
         g++ \
         git \
-        language-pack-en \
-        libatlas-dev \
         libbz2-dev \
         libcurl4-openssl-dev \
         libfreetype6-dev \
+        libpng12-dev \
         libsqlite3-dev \
-        libglib2.0-0 \
-        libncurses5-dev \ 
-        libncursesw5-dev \
-        libopenblas-dev \
-        libreadline-dev \
         libssl-dev \
         libtool \
         libzmq3-dev \        
         make \
-        mesa-utils \ 
         pkg-config \        
         python3-dev \
         python3 \
@@ -49,8 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         rsync \
         software-properties-common \
         sqlite3 \
-        tk-dev \
-        xz-utils \
+        tk-dev \        
         unzip \
         zip \
         zlib1g-dev \
@@ -88,13 +80,14 @@ RUN conda install -c conda-forge -y -n $MYCONDA_ENV \
     'jupyter=1.0*' \
     'ipython=5.1*' \
     'lxml=4.1*' \
-    'matplotlib=2.1*' \
+    'matplotlib=2.2*' \
     'numpy=1.13*' \
     'pandas=0.20*' \
     'pillow=4.3*' \
     'pip=9.0*' \
     'pymysql=0.7*' \
     'pydotplus=2.0*' \
+     qt pyqt=5 \
     'scipy=0.19*' \ 
     'scikit-learn=0.19*' \
     'setuptools=36.7*' \

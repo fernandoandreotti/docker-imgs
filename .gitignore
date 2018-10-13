@@ -1,0 +1,10 @@
+.keras/
+.config/
+.cache/
+.ipython/
+.local/
+.conda/
+core
+.python_history
+.bash_history
+.jupyter
