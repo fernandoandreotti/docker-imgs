@@ -85,8 +85,9 @@ RUN conda install -c conda-forge -y -n $MYCONDA_ENV \
     'pandas=0.20*' \
     'pillow=4.3*' \
     'pip=9.0*' \
-    'pymysql=0.7*' \
     'pydotplus=2.0*' \
+    'pymysql=0.7*' \
+    'pyzmq=17.0.0' \
      qt pyqt=5 \
     'scipy=0.19*' \ 
     'scikit-learn=0.19*' \
