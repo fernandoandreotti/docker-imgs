@@ -1,6 +1,5 @@
 #!/bin/sh
 
-type=$1
 USER_NAME=`basename $HOME`
 
 sudo xhost + local:docker       # xhost+ slightly unsafe
@@ -14,13 +13,17 @@ if [ -z "$1" ] || [ "$1" -ne "cpu" ]; then
      andreotti/deeplearn:gpu
 else 
     echo "Mounting docker CPU image.."
+<<<<<<< HEAD
+    docker run -ti --rm  \
+        -e DISPLAY=unix$DISPLAY \
+        -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
+        -v `pwd`:/data \
+        andreotti/deeplearn:cpu
+=======
     docker run -ti --rm --device /dev/dri \     # dri
         -e DISPLAY=unix$DISPLAY \               # outputing display
         -v /tmp/.X11-unix:/tmp/.X11-unix:rw \   # also enable X11 socket
         -v `pwd`:/data \                        # map current folder to /data
         andreotti/deeplearn:cpu                 # image name    
+>>>>>>> 1c4486d51e7c49f7b2385b8d2ed4cf7194d64357
 fi
-
-
-
-
