@@ -1,4 +1,4 @@
-FROM nvidia/cuda:9.1-cudnn7-devel-ubuntu16.04
+FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu18.04
 
 # Parameters that may be changed
 ARG PYTHON_VERSION=3.6.5
@@ -29,8 +29,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         libbz2-dev \
         libcurl4-openssl-dev \
-        libfreetype6-dev \
-        libpng12-dev \
         libsqlite3-dev \
         libssl-dev \
         libtool \
@@ -73,32 +71,32 @@ RUN conda create -y --name $MYCONDA_ENV python=${PYTHON_VERSION}
 
 # Install Python 3 packages
 RUN conda install -c conda-forge -y -n $MYCONDA_ENV \
-'beautifulsoup4=4.5*' \
-    'cython=0.27*' \
-    'graphviz=2.38*' \
-    'h5py=2.7*' \    
-    'ipykernel=4.5*' \
-    'ipywidgets=5.2*' \
+    'beautifulsoup4=4.6*' \
+    'cython=0.29*' \
+    'graphviz=2.40*' \
+    'h5py=2.8*' \    
+    'ipykernel=5.1*' \
+    'ipywidgets=7.4*' \
     'jupyter=1.0*' \
     'ipython=5.1*' \
-    'lxml=4.1*' \
+    'lxml=4.2*' \
     'matplotlib=2.2*' \
-    'numpy=1.13*' \
-    'pandas=0.20*' \
-    'pillow=4.3*' \
-    'pip=9.0*' \
+    'numpy=1.15*' \
+    'pandas=0.23*' \
+    'pillow=5.1*' \
+    'pip=10.0*' \
     'pydotplus=2.0*' \
-    'pymysql=0.7*' \
+    'pymysql=0.9*' \
     'pyzmq=17.0.0' \
      qt pyqt=5 \
-    'scipy=0.19*' \ 
-    'scikit-learn=0.19*' \
-    'setuptools=36.7*' \
-    'six=1.10*' \
-    'sphinx=1.5*' \
-    'spyder=3.2*' \
-    'tornado=4.5.3' \
-    'wheel=0.30*' \
+    'scipy=1.1*' \ 
+    'scikit-learn=0.20*' \
+    'setuptools=40.4*' \
+    'six=1.11*' \
+    'sphinx=1.8*' \
+    'spyder=3.3*' \
+    'tornado=5.1*' \
+    'wheel=0.32*' \
     && conda clean -tipsy
 
 RUN source activate deeplearn && \
