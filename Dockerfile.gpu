@@ -28,6 +28,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         g++ \
         git \
         libbz2-dev \
+        libxcomposite-dev \
         libcurl4-openssl-dev \
         libsqlite3-dev \
         libssl-dev \
