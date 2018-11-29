@@ -1,15 +1,8 @@
 FROM nvidia/cuda:9.2-cudnn7-devel-ubuntu18.04
-
-# Parameters that may be changed
-ARG PYTHON_VERSION=3.6.5
-ARG TENSORFLOW_VERSION=1.11
-ARG LOCALPATH=/data
-
-
 MAINTAINER Fernando Andreotti <fernando.andreotti@gmx.de>
 
+ARG LOCALPATH=/data
 USER root
-ENV LOCALPATH=/data
 ENTRYPOINT ["/bin/bash", "-c" ]
 ENV DEBIAN_FRONTEND noninteractive
 ENV HOME $LOCALPATH
@@ -18,6 +11,7 @@ ENV HOME $LOCALPATH
 ##  Deb Packages     ##
 #######################
 
+# Most system and Python packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
         autoconf \
         automake \
@@ -28,37 +22,35 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         g++ \
         git \
         libbz2-dev \
-        libxcomposite-dev \
         libcurl4-openssl-dev \
+        libfreetype6-dev \
         libsqlite3-dev \
         libssl-dev \
         libtool \
-        libzmq3-dev \        
+        libzmq3-dev \
         make \
-        pkg-config \        
+        openssl \
+        pkg-config \
         python3-dev \
         python3 \
         python3-pyqt5.qtwebkit \
+        python3-pyqt5.qtwebengine \
         qt5-default \
         rsync \
         software-properties-common \
         sqlite3 \
-        tk-dev \        
+        tk-dev \
         unzip \
         zip \
         zlib1g-dev \
-        wget \
-        && apt-get clean \
-        && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir $LOCALPATH
-WORKDIR $LOCALPATH
+        wget
 
 ############################
 ##  Install Miniconda    ##
 ##########################
+RUN mkdir $LOCALPATH
+WORKDIR $LOCALPATH
 
-ENV MYCONDA_ENV "deeplearn"
 ENV CONDA_ENV_PATH /opt/miniconda
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN curl -LO http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh
@@ -68,64 +60,7 @@ RUN rm Miniconda-latest-Linux-x86_64.sh
 RUN conda update --quiet --yes conda
 
 # Creating Anaconda environment
-RUN conda create -y --name $MYCONDA_ENV python=${PYTHON_VERSION}
-
-# Install Python 3 packages
-RUN conda install -c conda-forge -y -n $MYCONDA_ENV \
-    'beautifulsoup4=4.6*' \
-    'cython=0.29*' \
-    'graphviz=2.40*' \
-    'h5py=2.8*' \    
-    'ipykernel=5.1*' \
-    'ipywidgets=7.4*' \
-    'jupyter=1.0*' \
-    'ipython=5.1*' \
-    'lxml=4.2*' \
-    'matplotlib=2.2*' \
-    'numpy=1.15*' \
-    'pandas=0.23*' \
-    'pillow=5.1*' \
-    'pip=10.0*' \
-    'pydotplus=2.0*' \
-    'pymysql=0.9*' \
-    'pyzmq=17.0.0' \
-     qt pyqt=5 \
-    'scipy=1.1*' \ 
-    'scikit-learn=0.20*' \
-    'setuptools=40.4*' \
-    'six=1.11*' \
-    'sphinx=1.8*' \
-    'spyder=3.3*' \
-    'tornado=5.1*' \
-    'wheel=0.32*' \
-    && conda clean -tipsy
-
-RUN source activate deeplearn && \
-    pip install --upgrade pip && \
-    pip install pydot3
-
-
-##############################
-##  Install TensorFlow      ##
-##############################
-RUN conda install -c conda-forge -n $MYCONDA_ENV tensorflow-gpu=${TENSORFLOW_VERSION}
-
-
-############################
-## Jupyter Configuration ###
-############################
-
-# Add a notebook profile.
-RUN mkdir -p -m 700 $LOCALPATH/.jupyter/ && \
-	echo "c.NotebookApp.ip = '*'" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
-	echo "c.NotebookApp.port = 8888" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
-	echo "c.NotebookApp.open_browser = False" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
-	echo "c.MultiKernelManager.default_kernel_name = 'python3'" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
-	echo "c.NotebookApp.allow_root = True" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
-	echo "c.NotebookApp.password_required = False" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py \
-	echo "c.NotebookApp.token = ''" >> $LOCALPATH/.jupyter/jupyter_notebook_config.py
-
-# Expose Ports for TensorBoard (6006), Ipython (8888)
-EXPOSE 6006 8888
+COPY requirements-gpu.yml /tmp/
+RUN conda env create -f /tmp/requirements-gpu.yml
 
 CMD ["source activate deeplearn && /bin/bash"]
