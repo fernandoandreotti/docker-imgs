@@ -21,7 +21,7 @@ dependencies:
  - scipy= 1.0*
  - setuptools=39.1.0
  - six=1.11*
- - spyder=3.2
+ - spyder=3.3
  - wheel=0.32*
  - tensorflow=1.11
 prefix: /opt/miniconda/envs/deeplearn
